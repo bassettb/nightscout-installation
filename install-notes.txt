@@ -18,7 +18,7 @@ sudo vi /etc/fstab
 # Add this line to the fstab:
  /swapfile swap swap defaults 0 0
 
-# Mount the secondary drive to /data
+# Mount a secondary drive to /data (optional)
 # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
 sudo mkfs -t ext4 /dev/xvdb
 sudo mkdir /data
@@ -33,11 +33,11 @@ sudo mount -a
 # Create a /etc/yum.repos.d/mongodb-org-3.6.repo file as described in above link
 sudo yum install -y mongodb-org
 
-# Setup Mongo to use the /data folder
+# Setup Mongo to use the /data folder (optional)
 mkdir /data/mongo
 sudo chown mongod:mongod /data/mongo
 sudo nano /etc/mongodb.conf
-# Edit the conf file to use the /data/mongo folder
+# set the dbPath to /data/mongo
 
 # Install git, Node and PM2
 sudo yum install -y git
