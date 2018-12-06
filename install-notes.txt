@@ -1,0 +1,75 @@
+Nightscout AWS and Linux Installation notes
+
+
+# Creating EC2 instance in AWS
+# Use the console to create an ec2 server t3-micro with Amazon Linux 2 LTS Candidate AMI 2017.12.0 
+# Use 8GB root
+# Use 6GB EBS second drive for database
+# open ports: 443 and 80
+
+# Set up swap file for low RAM machines (less than 2GB)
+# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-memory-swap-file/
+sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo swapon -s
+sudo vi /etc/fstab
+# Add this line to the fstab:
+ /swapfile swap swap defaults 0 0
+
+# Mount the secondary drive to /data
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
+sudo mkfs -t ext4 /dev/xvdb
+sudo mkdir /data
+sudo file -s /dev/xvdb   # gets the uuid of the drive
+sudo nano /etc/fstab
+# put this line in the fstab file (use uuid from above):
+   UUID=4a225a65-dc2c-45d1-9ed2-260aac21b6c3     /data       ext4    defaults,nofail  0   2
+sudo mount -a
+
+# Installing MongoDb
+# https://docs.mongodb.com/manual/tutorial/install-mongodb-on-amazon/
+# Create a /etc/yum.repos.d/mongodb-org-3.6.repo file as described in above link
+sudo yum install -y mongodb-org
+
+# Setup Mongo to use the /data folder
+mkdir /data/mongo
+sudo chown mongod:mongod /data/mongo
+sudo nano /etc/mongodb.conf
+# Edit the conf file to use the /data/mongo folder
+
+# Install git, Node and PM2
+sudo yum install -y git
+sudo yum install nodejs npm
+sudo npm install -g pm2
+
+# Install nightscout
+# optionally use your own fork and/or a different branch
+mkdir /opt/app
+git clone --single-branch -b master https://github.com/nightscout/cgm-remote-monitor.git /opt/app  
+cd /opt/app && npm install
+
+
+# Copy the nightscout.sh file into $HOME and then make it executable:
+sudo chmod 755 $HOME/nightscout.sh
+
+# Use PM2 to start nightscout and keep it running after reboots
+pm2 start $HOME/nightscout.sh
+pm2 save
+
+
+# Install nginx and configure as a reverse proxy (optional)
+# After doing this, you can access your server at port 80
+# If installing on an AWS EC2, use the amazon-linux-extras list. Otherwise, try YUM or APT
+sudo amazon-linux-extras install nginx1.12
+
+# copy the nginx-nightscout.conf file to /etc/nginx/conf.d/nightscout.conf
+
+
+
+
+# To update nightscout at any point in the future:
+pm2 stop nightscout
+git clone --single-branch -b master https://github.com/nightscout/cgm-remote-monitor.git /opt/app  
+pm2 start nightscout
