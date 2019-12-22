@@ -25,7 +25,7 @@ sudo mkdir /data
 sudo file -s /dev/xvdb   # gets the uuid of the drive
 sudo nano /etc/fstab
 # put this line in the fstab file (use uuid from above):
-   UUID=4a225a65-dc2c-45d1-9ed2-260aac21b6c3     /data       ext4    defaults,nofail  0   2
+   UUID=4a225a65-dc2c-45d1-9ed2-260bbc21b6c3     /data       ext4    defaults,nofail  0   2
 sudo mount -a
 
 # Installing MongoDb
@@ -39,15 +39,19 @@ sudo chown mongod:mongod /data/mongo
 sudo nano /etc/mongodb.conf
 # set the dbPath to /data/mongo
 
-# Install git, Node and PM2
-sudo yum install -y git
-sudo yum install nodejs npm
-sudo npm install -g pm2
+# Install git, 
+yum install -y git
+sudo yum install gcc-c++
+
+# Install Node and PM2
+https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html
+npm install -g pm2
 
 # Install nightscout
 # optionally use your own fork and/or a different branch
-mkdir /opt/app
-git clone --single-branch -b master https://github.com/nightscout/cgm-remote-monitor.git /opt/app  
+sudo mkdir /opt/app
+sudo chown ec2-user:ec2-user /opt/app
+git clone --single-branch -b 0.12.2 https://github.com/nightscout/cgm-remote-monitor.git /opt/app  
 cd /opt/app && npm install
 
 
@@ -68,8 +72,22 @@ sudo amazon-linux-extras install nginx1.12
 
 
 
+#To update node (use latest LTS version)
+# updating node will 'hide' pm2 ?? (so reinstall that too)
+pm2 delete nightscout
+nvm install vXXXX
+nvm use vXXXX
+npm i -g pm2 && pm2 update
+cd /opt/app && npm install
+cd
+pm2 start nightscout.sh
+pm2 save
 
-# To update nightscout at any point in the future:
+
+#To update nightscout
 pm2 stop nightscout
-git clone --single-branch -b master https://github.com/nightscout/cgm-remote-monitor.git /opt/app  
+cd /opt/app && rm -rf * .*
+git clone --single-branch -b 13.0.1 https://github.com/nightscout/cgm-remote-monitor.git /opt/app
+npm install
 pm2 start nightscout
+pm2 save
