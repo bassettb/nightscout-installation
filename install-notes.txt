@@ -39,7 +39,7 @@ sudo chown mongod:mongod /data/mongo
 sudo nano /etc/mongodb.conf
 # set the dbPath to /data/mongo
 
-# Install git, 
+# Install git,
 yum install -y git
 sudo yum install gcc-c++
 
@@ -51,7 +51,8 @@ npm install -g pm2
 # optionally use your own fork and/or a different branch
 sudo mkdir /opt/app
 sudo chown ec2-user:ec2-user /opt/app
-git clone --single-branch -b 0.12.2 https://github.com/nightscout/cgm-remote-monitor.git /opt/app  
+git clone --single-branch -b 0.12.2 https://github.com/nightscout/cgm-remote-monitor.git /opt/app
+export NODE_OPTIONS='--max-old-space-size=2048'
 cd /opt/app && npm install
 
 
@@ -72,12 +73,13 @@ sudo amazon-linux-extras install nginx1.12
 
 
 
+#setup certbot
 wget https://dl.eff.org/certbot-auto
 sudo mv certbot-auto /usr/local/bin/certbot-auto
 sudo chown root /usr/local/bin/certbot-auto
 sudo chmod 0755 /usr/local/bin/certbot-auto
 
-sudo touch /etc/redhat-release    
+sudo touch /etc/redhat-release
 sudo /usr/local/bin/certbot-auto --nginx
 
 
@@ -97,7 +99,8 @@ pm2 save
 #To update nightscout
 pm2 stop nightscout
 cd /opt/app && rm -rf * .*
-git clone --single-branch -b 13.0.1 https://github.com/nightscout/cgm-remote-monitor.git /opt/app
+git clone --single-branch -b master https://github.com/nightscout/cgm-remote-monitor.git /opt/app
+export NODE_OPTIONS='--max-old-space-size=2048'
 npm install
 pm2 start nightscout
 pm2 save
