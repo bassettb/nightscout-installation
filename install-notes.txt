@@ -2,7 +2,7 @@ Nightscout AWS and Linux Installation notes
 
 
 # Creating EC2 instance in AWS
-# Use the console to create an ec2 server t3-micro with Amazon Linux 2 LTS Candidate AMI 2017.12.0 
+# Use the console to create an ec2 server t3-micro with Amazon Linux 2 LTS Candidate AMI 2017.12.0
 # Use 8GB root
 # Use 6GB EBS second drive for database
 # open ports: 443 and 80
@@ -51,21 +51,20 @@ npm install -g pm2
 # optionally use your own fork and/or a different branch
 sudo mkdir /opt/app
 sudo chown ec2-user:ec2-user /opt/app
-git clone --single-branch -b 0.12.2 https://github.com/nightscout/cgm-remote-monitor.git /opt/app
+git clone --single-branch -b master https://github.com/nightscout/cgm-remote-monitor.git /opt/app
 export NODE_OPTIONS='--max-old-space-size=2048'
 cd /opt/app && npm install
 
 
-# Copy the nightscout.sh file into $HOME and then make it executable:
-sudo chmod 755 $HOME/nightscout.sh
+# Copy the ecosystem.config.yaml file into $HOME
 
 # Use PM2 to start nightscout and keep it running after reboots
-pm2 start $HOME/nightscout.sh
+pm2 start ecosystem.config.yaml
 pm2 save
 
 
 # Install nginx and configure as a reverse proxy (optional)
-# After doing this, you can access your server at port 80
+# After doing this, you can access your server at port 80 or 443, depending on the last line
 # If installing on an AWS EC2, use the amazon-linux-extras list. Otherwise, try YUM or APT
 sudo amazon-linux-extras install nginx1.12
 
@@ -92,7 +91,7 @@ nvm use vXXXX
 npm i -g pm2 && pm2 update
 cd /opt/app && npm install
 cd
-pm2 start nightscout.sh
+pm2 start ecosystem.config.yaml
 pm2 save
 
 

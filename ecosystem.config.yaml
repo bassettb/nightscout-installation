@@ -1,0 +1,19 @@
+apps:
+  - script : /opt/app/server.js
+    name   : nightscout
+    watch  : true
+    cwd    : /opt/app
+    env:
+      API_SECRET:  [secret]
+      MONGO_CONNECTION:  mongodb://localhost/admin
+      MONGODB_URI:  mongodb://localhost/admin
+      HOSTNAME:  127.0.0.1
+      PORT:  1337
+      DEVICESTATUS_ADVANCED:  true
+      ENABLE:  "careportal boluscalc food bwp cage sage iage iob cob basal ar2 rawbg pushover bgi pump openaps cors"
+      ALARM_TYPES:  predict
+      #AUTH_DEFAULT_ROLES:  "readable careportal devicestatus-upload"
+      AUTH_DEFAULT_ROLES:  denied
+      INSECURE_USE_HTTP:  true
+      DISPLAY_UNITS:  mg/dl
+      PUMP_FIELDS:  "reservoir battery clock"
