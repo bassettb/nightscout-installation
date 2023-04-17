@@ -1,0 +1,39 @@
+sudo yum update -y
+
+
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html
+sudo amazon-linux-extras install docker
+sudo yum install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+
+#logout/login
+
+# https://docs.docker.com/compose/install/
+# download docker-compose using curl
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+
+
+
+#list filesystems
+sudo lsblk -f
+#check if it is formatted
+sudo file -s /dev/nvme1n1
+
+# ONLY FIRST TIME - create filesystem
+sudo mkfs -t ext4 /dev/nvme1n1
+
+sudo mkdir /data
+sudo nano /etc/fstab
+# put this line in the fstab file (use uuid from above):
+   UUID=4a225a65-dc2c-45d1-1111-260bbc21b6c3     /data       ext4    defaults,nofail  0   2
+sudo mount -a
+
+
+docker-compose up

@@ -85,6 +85,7 @@ pm2 delete nightscout
 nvm install vXXXX
 nvm use vXXXX
 npm i -g pm2 && pm2 update
+export NODE_OPTIONS='--max-old-space-size=2048'
 cd /opt/app && npm install
 cd
 pm2 start ecosystem.config.yaml
@@ -97,5 +98,6 @@ cd /opt/app && rm -rf * .*
 git clone --single-branch -b master https://github.com/nightscout/cgm-remote-monitor.git /opt/app
 export NODE_OPTIONS='--max-old-space-size=2048'
 npm install
-pm2 start nightscout
+cd
+pm2 start ecosystem.config.yaml
 pm2 save
