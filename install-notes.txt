@@ -73,14 +73,10 @@ sudo amazon-linux-extras install nginx1.12
 
 
 #setup certbot
-wget https://dl.eff.org/certbot-auto
-sudo mv certbot-auto /usr/local/bin/certbot-auto
-sudo chown root /usr/local/bin/certbot-auto
-sudo chmod 0755 /usr/local/bin/certbot-auto
-
-sudo touch /etc/redhat-release
-sudo /usr/local/bin/certbot-auto --nginx
-
+sudo amazon-linux-extras install epel -y
+sudo yum install certbot
+sudo yum install python-certbot-nginx
+sudo certbot --nginx
 
 
 #To update node (use latest LTS version)
